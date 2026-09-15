@@ -741,13 +741,13 @@
                     <div class="p-4 overflow-x-auto print:p-0">
                         <div class="min-w-[700px]">
                             <div class="grid grid-cols-7 gap-2 mb-2 text-center">
-                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Dom</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Lun</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Mar</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Mié</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Jue</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Vie</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Sáb</div>
+                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Dom</div>
                             </div>
                             <div id="calendar-proy-grid" class="grid grid-cols-7 gap-2 calendar-grid-print">
                                 <!-- Celdas inyectadas por JS -->
@@ -796,13 +796,13 @@
                     <div class="p-4 overflow-x-auto print:p-0">
                         <div class="min-w-[700px]">
                             <div class="grid grid-cols-7 gap-2 mb-2 text-center">
-                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Dom</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Lun</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Mar</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Mié</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Jue</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Vie</div>
                                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Sáb</div>
+                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase bg-slate-100 dark:bg-slate-700/50 py-1 rounded">Dom</div>
                             </div>
                             <div id="calendar-tec-grid" class="grid grid-cols-7 gap-2 calendar-grid-print">
                                 <!-- Celdas inyectadas por JS -->
@@ -2990,11 +2990,13 @@ function doGet(e) {
             document.getElementById('cal-proy-month-label').innerText = `${monthNames[month]} ${year}`;
 
             grid.innerHTML = '';
-            const firstDayIndex = new Date(year, month, 1).getDay();
+            // getDay() devuelve 0=Domingo..6=Sábado; convertimos a índice Lunes=0..Domingo=6
+            // para que las celdas vacías de relleno coincidan con el encabezado Lun-Dom.
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             for(let i = 0; i < firstDayIndex; i++) {
-                grid.innerHTML += `<div class="bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-lg h-24 sm:h-32"></div>`;
+                grid.innerHTML += `<div class="bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-lg min-h-[6rem] sm:min-h-[8rem]"></div>`;
             }
 
             for(let d = 1; d <= daysInMonth; d++) {
@@ -3031,9 +3033,9 @@ function doGet(e) {
                 });
 
                 grid.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 border ${isToday ? 'border-emerald-400 ring-1 ring-emerald-400 dark:border-emerald-500 dark:ring-emerald-500 print:border-emerald-600 print:ring-2' : 'border-slate-200 dark:border-slate-700'} rounded-lg h-24 sm:h-32 p-1.5 flex flex-col overflow-hidden transition-all hover:shadow-md">
+                    <div class="bg-white dark:bg-slate-800 border ${isToday ? 'border-emerald-400 ring-1 ring-emerald-400 dark:border-emerald-500 dark:ring-emerald-500 print:border-emerald-600 print:ring-2' : 'border-slate-200 dark:border-slate-700'} rounded-lg min-h-[6rem] sm:min-h-[8rem] p-1.5 flex flex-col transition-all hover:shadow-md">
                         <span class="text-xs font-bold ${isToday ? 'text-white bg-emerald-500 w-6 h-6 flex items-center justify-center rounded-full shadow-sm print:bg-emerald-600 print:text-white' : 'text-slate-500 dark:text-slate-400'} mb-1">${d}</span>
-                        <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 print:overflow-visible">
+                        <div class="flex-1 pr-1">
                             ${visitasHtml}
                         </div>
                     </div>
@@ -3086,10 +3088,12 @@ function doGet(e) {
             }
 
             grid.innerHTML = '';
-            const firstDayIndex = new Date(year, month, 1).getDay();
+            // getDay() devuelve 0=Domingo..6=Sábado; convertimos a índice Lunes=0..Domingo=6
+            // para que las celdas vacías de relleno coincidan con el encabezado Lun-Dom.
+            const firstDayIndex = (new Date(year, month, 1).getDay() + 6) % 7;
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-            for(let i = 0; i < firstDayIndex; i++) grid.innerHTML += `<div class="bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-lg h-24 sm:h-32"></div>`;
+            for(let i = 0; i < firstDayIndex; i++) grid.innerHTML += `<div class="bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-lg min-h-[6rem] sm:min-h-[8rem]"></div>`;
 
             for(let d = 1; d <= daysInMonth; d++) {
                 const currentDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -3142,9 +3146,9 @@ function doGet(e) {
                 });
 
                 grid.innerHTML += `
-                    <div class="bg-white dark:bg-slate-800 border ${isToday ? 'border-purple-400 ring-1 ring-purple-400 dark:border-purple-500 dark:ring-purple-500 print:border-purple-600 print:ring-2' : 'border-slate-200 dark:border-slate-700'} rounded-lg h-24 sm:h-32 p-1.5 flex flex-col overflow-hidden transition-all hover:shadow-md">
+                    <div class="bg-white dark:bg-slate-800 border ${isToday ? 'border-purple-400 ring-1 ring-purple-400 dark:border-purple-500 dark:ring-purple-500 print:border-purple-600 print:ring-2' : 'border-slate-200 dark:border-slate-700'} rounded-lg min-h-[6rem] sm:min-h-[8rem] p-1.5 flex flex-col transition-all hover:shadow-md">
                         <span class="text-xs font-bold ${isToday ? 'text-white bg-purple-600 w-6 h-6 flex items-center justify-center rounded-full shadow-sm print:bg-purple-600 print:text-white' : 'text-slate-500 dark:text-slate-400'} mb-1">${d}</span>
-                        <div class="flex-1 overflow-y-auto custom-scrollbar pr-1 print:overflow-visible">
+                        <div class="flex-1 pr-1">
                             ${visitasHtml}
                         </div>
                     </div>
